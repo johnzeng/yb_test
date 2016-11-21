@@ -29,18 +29,22 @@ client.on('connect', function () {
           })
 
   // test the alias
-  client.publish(',yali', 'test_alias_a', {qos : 1}, 
+  client.publish(',yali', 'test_alias_b', {qos : 1}, 
           function(error){
               if (null == error){
                   console.log("set alias go back");
-                  client.publish(',yta/test_alias_a', 'hello')
+                  client.publish(',yta/test_alias_b', 'hello')
               }
           })
 
 })
- 
+
+var counter = 0
 client.on('message', function (topic, message) {
-  console.log(topic , message.toString())
+  console.log(topic , message.toString());
+  counter ++;
+  if (counter === 2){
+    client.end();
+  }
 })
 
-//client.end()

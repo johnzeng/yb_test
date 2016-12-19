@@ -68,8 +68,12 @@ client.on('message', function (topic, message) {
       client.publish( token_prefix + ',yali', '', {qos : 1}, 
           function(error){
               if (null == error){
-                  console.log("--- publish to unset is ok---");
-                  client.end();
+                  client.unsubscribe([token_prefix + topic, token_prefix + topic + '/p'], 
+                      function(error){
+                          console.log("--- publish to unset is ok---");
+                          client.end();
+
+                      });
               }
           })
   }

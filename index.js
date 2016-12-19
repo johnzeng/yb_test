@@ -34,27 +34,30 @@ var topic = 'normal';
 if(program.topic) topic = program.topic;
 
 var token_prefix = '';
-if(program.token) token_prefix = ',yam' + token_prefix + '_';
+if(program.token != '') token_prefix = ',yam' + program.token + '_';
 
 client.on('connect', function () {
   console.log("--- connect ---");
-  // test the normal pubsub 
-  client.subscribe([token_prefix + topic, token_prefix + topic + '/p'], 
+  // test the normal presence
+  client.publish( token_prefix + ',yali', alias , {qos : 1}, 
       function(error){
+          console.log("--- alias is set---");
           if(null == error){
-              console.log("--- send to normal channel ---");
-              client.publish(token_prefix + topic, "hi", {qos:1});
+              // set and send message to self alias
+              client.subscribe(token_prefix + topic + '/p', 
+                  function(error){
+                      if (null == error){
+                          console.log("--- publish to alias ---");
+                          client.publish(token_prefix + ',yta/' + alias, 'hello');
+                          client.subscribe(token_prefix + topic, function(error){
+                              console.log("--- send to normal channel ---");
+                              client.publish(token_prefix + topic, "hi", {qos:1});
+                          });
+                      }
+                  });
           }
       })
 
-  // test the alias
-  client.publish( token_prefix + ',yali', alias , {qos : 1}, 
-      function(error){
-          if (null == error){
-              console.log("--- publish to alias ---");
-              client.publish(token_prefix + ',yta/' + alias, 'hello');
-          }
-      })
 
 })
 

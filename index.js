@@ -1,68 +1,76 @@
-//import config
-require("./config.js")
+var program = require('commander');
+
+program
+  .option('-a, --appkey <appkey>', 'appkey')
+  .option('-t, --topic <topic>', 'topic', 'normal')
+  .option('-a --alias <alias>', 'alias', 'test_alias')
+  .option('-u --uid <uid>', 'uid')
+  .option('-p --password <password>', 'password')
+  .option('-c --cid <client id>', 'client id')
+  .option('-f, --front <host>', 'mqtt front' )
+  .option('-k, --token <token>', 'token for yam' )
+  .parse(process.argv);
 
 var mqtt = require('mqtt')
 
-var client  = mqtt.connect(config.url, {
+var url = 'mqtt:localhost'
+if(program.front) url = 'mqtt:' + program.front;
+
+console.log("now connect to " + url + ", with" + program.cid + " " + program.uid + " " + program.password)
+var client  = mqtt.connect(url, {
         protocolId:'MQIsdp',
         protocolVersion:3,
-        clientId: config.clientId,
-        username: config.username,
-        password: config.password
+        clientId: program.cid,
+        username: program.uid,
+        password: program.password
         })
 
+var counter = 3;
+
+var alais = 'test_alias';
+if(program.alias) alias = program.alias;
+
+var topic = 'normal';
+if(program.topic) topic = program.topic;
+
+var token_prefix = '';
+if(program.token) token_prefix = ',yam' + token_prefix + '_';
+
 client.on('connect', function () {
-  console.log("--- connect ---")
-  // test the basic sub and publish
-  client.subscribe(['normal_pub_sub', 'test_alias_b/p'], null , 
-          function(error, granted) {
-              if(null != error){
-              }else{
-                  console.log("--- sub ack ---")
-                  client.publish('normal_pub_sub', 'hello')
-              }
-          })
-
-  // test the alias
-  client.publish(',yali', 'test_alias_b', {qos : 1}, 
+  console.log("--- connect ---");
+  // test the normal pubsub 
+  client.subscribe([token_prefix + topic, token_prefix + topic + '/p'], 
       function(error){
-          if (null == error){
-              client.publish(',yta/test_alias_b', 'hello');
+          if(null == error){
+              console.log("--- send to normal channel ---");
+              client.publish(token_prefix + topic, "hi", {qos:1});
           }
       })
 
-  // test the basic sub and publish with token
-  client.subscribe([ ',yam' + config.token + '_normal_pub_sub',',yam' + config.token +'_test_alias_b/p'], null , 
-          function(error, granted) {
-              if(null != error){
-              }else{
-                  console.log("--- sub with token ack ---")
-                  client.publish(',yam' + config.token + '_normal_pub_sub', 'hello')
-              }
-          })
-
   // test the alias
-  client.publish(',yam' + config.token + '_,yali', 'test_alias_b', {qos : 1}, 
+  client.publish( token_prefix + ',yali', alias , {qos : 1}, 
       function(error){
           if (null == error){
-              client.publish(',yam' + config.token + '_,yta/test_alias_b', 'hello');
+              console.log("--- publish to alias ---");
+              client.publish(token_prefix + ',yta/' + alias, 'hello');
           }
       })
-
 
 })
 
-var counter = 0
+
 client.on('message', function (topic, message) {
   console.log("!!! on message !!!!");
-  console.log(topic , message.toString());
-  counter ++;
-  if (counter === 2){
-      client.publish(',yaliget',"", {qos:1});
+  console.log("topic:" + topic + ", message:" + message);
+  counter--;
+  if(counter==0){
+      //unset alias
+      client.publish( token_prefix + ',yali', '', {qos : 1}, 
+          function(error){
+              if (null == error){
+                  console.log("--- publish to unset is ok---");
+                  client.end();
+              }
+          })
   }
-  if (counter === 3){
-    client.end();
-    process.exit();
-  }
-  console.log("counter:" + counter);
 })

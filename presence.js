@@ -14,7 +14,7 @@ var post_data = {
     'p' : 2
   };
 
-var todo = function(){
+var todo = function (){
     var mqtt = require('mqtt')
 
         var url = 'mqtt:localhost'
@@ -29,7 +29,7 @@ var todo = function(){
             password: userinfo.password
         })
 
-    var counter = 2;
+    var counter = 1;
 
     var alais = 'test_alias';
     if(program.alias) alias = program.alias;
@@ -42,48 +42,26 @@ var todo = function(){
 
     client.on('connect', function () {
         console.log("--- connect ---");
-        // test the normal presence
-        client.publish( token_prefix + ',yali', alias , {qos : 1}, 
-            function(error){
-                console.log("--- alias is set---");
-                if(null == error){
-                    // set and send message to self alias
-                    if (null == error){
-                        console.log("--- publish to alias ---");
-                        client.publish(token_prefix + ',yta/' + alias, 'hello', {qos : 1}, 
-                            function(error){
-                                client.subscribe(token_prefix + topic, function(error){
-                                    console.log("--- send to normal channel ---");
-                                    client.publish(token_prefix + topic, "hi", {qos:1});
-                                });
-                            });
-                    }
-                }
-            })
-
-
+        client.subscribe(token_prefix + topic + '/p', function(error){
+            console.log("--- send to normal channel ---");
+            client.publish(token_prefix + topic, "hi", {qos:1});
+        });
     });
-
 
     client.on('message', function (topic, message) {
         console.log("!!! on message !!!!");
         console.log("topic:" + topic + ", message:" + message);
         counter--;
         if(counter==0){
-            //unset alias
-            client.publish( token_prefix + ',yali', '', {qos : 1}, 
+            client.unsubscribe([token_prefix + topic + '/p'], 
                 function(error){
-                    if (null == error){
-                        client.unsubscribe([token_prefix + topic], 
-                            function(error){
-                                console.log("--- publish to unset is ok---");
-                                client.end();
+                    console.log("--- publish to unset is ok---");
+                    client.end();
 
-                            });
-                    }
-                })
+                });
         }
     })
+
 }
 
 var userinfo = {}
@@ -99,3 +77,4 @@ request({
     userinfo.password = body.p;
     todo();
 });
+

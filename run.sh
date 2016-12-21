@@ -2,5 +2,5 @@
 
 echo $@
 node presence.js $@ &
-sleep 5;node index.js $@ &
+sleep 5;node pubsub.js $@ &
 wait %1 %2

@@ -1,37 +1,39 @@
 var program = require('commander');
 program
-.option('-a, --appkey <appkey>', 'appkey', '58072d1fd69873332db470a6')
+.option('-a, --appkey <appkey>', 'normal appkey', '58072d1fd69873332db470a6')
 .option('-t, --topic <topic>', 'topic', 'normal')
 .option('-a --alias <alias>', 'alias', 'test_alias')
-.option('-f, --front <host>', 'mqtt front' )
-.option('-k, --token <token>', 'token for yam' )
+.option('-f, --front <host>', 'mqtt front' , 'localhost')
+.option('-k, --token <token>', 'token for yam' , '')
 .parse(process.argv);
 
 global.alais = 'test_alias';
-if(program.alias) alias = program.alias;
+if(program.alias != '') alias = program.alias;
 
 global.topic = 'normal';
-if(program.topic) topic = program.topic;
+if(program.topic != '') topic = program.topic;
 
 global.token_prefix = '';
 if(program.token != '') token_prefix = ',yam' + program.token + '_';
 
+var appkey = ''
+if(program.appkey != '') appkey = program.appkey;
+
 global.userinfo = {};
+
+var url = 'mqtt:localhost'
+if(program.front) url = 'mqtt:' + program.front;
 
 global.framework = function(connect_callback, end_callback, msg_count){
     var request = require('request');
 
-
     var post_data = {
-        'a' : program.appkey,
+        'a' : appkey,
         'p' : 2
     };
 
     var todo = function(){
         var mqtt = require('mqtt')
-
-            var url = 'mqtt:localhost'
-            if(program.front) url = 'mqtt:' + program.front;
 
         console.log("now connect to " + url + ", with" + userinfo.cid + " " + userinfo.uid + " " + userinfo.password)
             var client  = mqtt.connect(url, {
@@ -61,7 +63,6 @@ global.framework = function(connect_callback, end_callback, msg_count){
             }
         })
     }
-
 
     request({
         url: "http://reg.yunba.io:8383/device/reg/",

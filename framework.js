@@ -54,7 +54,8 @@ global.framework = function(connect_callback, end_callback, msg_count){
 
         client.on('message', function (topic, message) {
             console.log("!!! on message !!!!");
-            console.log("topic:" + topic + ", message:" + message);
+            var date = new Date();
+            console.log(date + ":topic:" + topic + ", message:" + message);
             counter--;
             console.log("counter : " + counter);
             if(counter==0){

@@ -2,7 +2,7 @@ var program = require('commander');
 program
 .option('-a, --appkey <appkey>', 'normal appkey', '58072d1fd69873332db470a6')
 .option('-t, --topic <topic>', 'topic', 'normal')
-.option('-a --alias <alias>', 'alias', 'test_alias')
+.option('-n --alias <alias>', 'alias', 'test_alias')
 .option('-f, --front <host>', 'mqtt front' , 'localhost')
 .option('-k, --token <token>', 'token for yam' , '')
 .parse(process.argv);

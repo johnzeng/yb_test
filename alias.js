@@ -7,6 +7,13 @@ var connect_callback = function(client){
                 if(null == error){
                     var date = new Date();
                     console.log(date + ":--- alias is set---");
+                    client.publish( token_prefix + ',yta/' + alias, 'hi' , {qos : 1}, 
+                        function(error){
+                            if(null == error){
+                                var date1 = new Date();
+                                console.log(date1 + ":--- sent to alias ---");
+                            }
+                        })
                 }
             })
 }

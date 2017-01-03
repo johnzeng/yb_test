@@ -15,7 +15,7 @@ var end_callback = function(client) {
             function(error){
                 console.log("--- publish to unset is ok---");
                 client.end();
-
+                console.log('\x1B[36mpubsub done\x1B[0m');
             });
 }
 

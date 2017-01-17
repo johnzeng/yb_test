@@ -21,7 +21,7 @@ if(program.appkey != '') appkey = program.appkey;
 
 global.userinfo = {};
 
-var url = 'mqtt:localhost'
+var url = ''
 if(program.front) url = 'mqtt:' + program.front;
 
 global.framework = function(connect_callback, end_callback, msg_count){

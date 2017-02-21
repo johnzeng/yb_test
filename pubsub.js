@@ -6,7 +6,7 @@ var connect_callback = function(client){
     var date2 = new Date();
     client.subscribe(token_prefix + topic, function(error){
         if(!error){
-            console.log(date2 + ":--- send to normal channel ---");
+            console.log(date2 + ":--- now send to normal channel ---");
             client.publish(token_prefix + topic, "hi", {qos:1});
         }else{
             client.end();

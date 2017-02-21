@@ -17,4 +17,5 @@ alias_pid=$!
 
 echo 'now wait'
 wait %1 %2 %3
+echo 'now kill bomber'
 kill %4

@@ -35,7 +35,7 @@ global.framework = function(connect_callback, end_callback, msg_count){
     var todo = function(){
         var mqtt = require('mqtt')
 
-        console.log("now connect to " + url + ", with" + userinfo.cid + " " + userinfo.uid + " " + userinfo.password)
+        console.log("now connect to " + url + ", with " + userinfo.cid + " " + userinfo.uid + " " + userinfo.password)
             var client  = mqtt.connect(url, {
                 protocolId:'MQIsdp',
                 protocolVersion:3,

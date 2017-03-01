@@ -32,6 +32,7 @@ var end_callback = function(client) {
                     function(error){
                         client.end();
                         console.log('\x1B[36malias done\x1B[0m');
+                        process.exit();
                     })
             });
 }

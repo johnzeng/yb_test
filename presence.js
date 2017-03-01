@@ -12,7 +12,7 @@ var end_callback = function(client) {
                 console.log("--- publish to unset presence is ok---");
                 client.end();
                 console.log('\x1B[36mpresence done\x1B[0m');
-
+                process.exit();
             });
 
 }

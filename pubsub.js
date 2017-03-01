@@ -16,11 +16,12 @@ var connect_callback = function(client){
 
 var end_callback = function(client) {
     client.unsubscribe([token_prefix + topic], 
-            function(error){
-                console.log("--- publish to unset is ok---");
-                client.end();
-                console.log('\x1B[36mpubsub done\x1B[0m');
-            });
+        function(error){
+            console.log("--- publish to unset is ok---");
+            client.end();
+            console.log('\x1B[36mpubsub done\x1B[0m');
+            process.exit();
+        });
 }
 
 framework(connect_callback, end_callback, 1);

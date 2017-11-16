@@ -1,3 +1,4 @@
+require('./config.js');
 var program = require('commander');
 program
 .option('-a, --appkey <appkey>', 'normal appkey', '58072d1fd69873332db470a6')
@@ -22,10 +23,9 @@ if(program.appkey != '') appkey = program.appkey;
 global.userinfo = {};
 
 var url = ''
-if(program.front) url = 'mqtt:' + program.front;
+if(program.front) url = program.front;
 
 global.framework = function(connect_callback, end_callback, msg_count){
-    var request = require('request');
 
     var post_data = {
         'a' : appkey,
@@ -65,16 +65,24 @@ global.framework = function(connect_callback, end_callback, msg_count){
         })
     }
 
-    request({
-        url: "http://reg.yunba.io:8383/device/reg/",
-        method: "POST",
-        json: true,   // <--Very important!!!
-        body: post_data 
-    }, function (error, response, body){
-        userinfo.cid = body.c;
-        userinfo.uid = body.u;
-        userinfo.password = body.p;
+    if(config.uid){
+        userinfo.cid = config.cid;
+        userinfo.uid = config.uid;
+        userinfo.password = config.pwd;
         todo();
-    });
+    }else{
+        var request = require('request');
+        request({
+            url: "http://reg.yunba.io:8383/device/reg/",
+            method: "POST",
+            json: true,   // <--Very important!!!
+            body: post_data 
+        }, function (error, response, body){
+            userinfo.cid = body.c;
+            userinfo.uid = body.u;
+            userinfo.password = body.p;
+            todo();
+        });
+    }
 
 };
